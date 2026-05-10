@@ -75,9 +75,10 @@ The dashboard uses Chart.js to visualize spending data with:
 
 ## Screenshots
 
-Add screenshots here:
 <img width="1500" height="732" alt="スクリーンショット 2026-05-10 午後3 58 38" src="https://github.com/user-attachments/assets/76c5cb68-9737-4fee-a84c-1ad321843237" />
+
 <img width="1501" height="777" alt="スクリーンショット 2026-05-10 午後3 58 26" src="https://github.com/user-attachments/assets/cf6c0fe6-3a38-418b-a528-4be1481b331f" />
+
 <img width="1282" height="820" alt="スクリーンショット 2026-05-10 午後3 58 14" src="https://github.com/user-attachments/assets/2aeaeb17-baf4-4410-af41-b98fa6d8b738" />
 
 

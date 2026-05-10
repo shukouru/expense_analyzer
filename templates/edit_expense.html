@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Expense</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Edit Expense</h1>
+
+    <form method="POST">
+        <p>
+            Amount:<br>
+            <input type="number" step="0.01" name="amount" value="{{ expense.amount }}" required>
+        </p>
+
+        <p>
+            Category:<br>
+            <select name="category" required>
+                <option value="Food" {% if expense.category == "Food" %}selected{% endif %}>Food</option>
+                <option value="Transportation" {% if expense.category == "Transportation" %}selected{% endif %}>Transportation</option>
+                <option value="Shopping" {% if expense.category == "Shopping" %}selected{% endif %}>Shopping</option>
+                <option value="School" {% if expense.category == "School" %}selected{% endif %}>School</option>
+                <option value="Entertainment" {% if expense.category == "Entertainment" %}selected{% endif %}>Entertainment</option>
+                <option value="Other" {% if expense.category == "Other" %}selected{% endif %}>Other</option>
+            </select>
+        </p>
+
+        <p>
+            Date:<br>
+            <input type="date" name="date" value="{{ expense.date }}" required>
+        </p>
+
+        <p>
+            Memo:<br>
+            <textarea name="memo">{{ expense.memo }}</textarea>
+        </p>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <p>
+        <a href="/expenses">Back to Expenses</a>
+    </p>
+</body>
+</html>

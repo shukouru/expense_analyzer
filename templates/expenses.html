@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Analyzer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Expense Analyzer</h1>
+    <form method="GET" action="/expenses">
+    <p>
+        Search memo:
+        <input type="text" name="search" value="{{ search or '' }}">
+    </p>
+
+    <p>
+        Category:
+        <select name="category">
+            <option value="">All</option>
+            <option value="Food" {% if category == "Food" %}selected{% endif %}>Food</option>
+            <option value="Transportation" {% if category == "Transportation" %}selected{% endif %}>Transportation</option>
+            <option value="Shopping" {% if category == "Shopping" %}selected{% endif %}>Shopping</option>
+            <option value="School" {% if category == "School" %}selected{% endif %}>School</option>
+            <option value="Entertainment" {% if category == "Entertainment" %}selected{% endif %}>Entertainment</option>
+            <option value="Other" {% if category == "Other" %}selected{% endif %}>Other</option>
+        </select>
+    </p>
+
+    <p>
+        Sort:
+        <select name="sort">
+            <option value="">Newest date first</option>
+            <option value="date_old" {% if sort == "date_old" %}selected{% endif %}>Oldest date first</option>
+            <option value="amount_high" {% if sort == "amount_high" %}selected{% endif %}>Amount high to low</option>
+            <option value="amount_low" {% if sort == "amount_low" %}selected{% endif %}>Amount low to high</option>
+        </select>
+    </p>
+
+    <button type="submit">Apply</button>
+    <a href="/expenses">Clear</a>
+    </form>
+    <div class="nav-links">
+        <a href="/expenses/add">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/trash">Trash</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+<table border="1">
+    <tr>
+        <th>Date</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Memo</th>
+        <th>Alert</th>
+        <th>Actions</th>
+    </tr>
+
+    {% for expense in expenses %}
+    <tr>
+        <td>{{ expense.date }}</td>
+        <td>{{ expense.category }}</td>
+        <td>${{ "%.2f"|format(expense.amount) }}</td>
+        <td>{{ expense.memo }}</td>
+
+        <td>
+            {% if average_expense > 0 and expense.amount > average_expense * 1.5 %}
+                <span class="badge badge-warning">High Spending</span>
+            {% else %}
+                <span class="badge badge-normal">Normal</span>
+            {% endif %}
+        </td>
+
+        <td>
+            <a href="/expenses/{{ expense.id }}/edit">Edit</a>
+
+            <form action="/expenses/{{ expense.id }}/delete" method="POST" style="display:inline;">
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

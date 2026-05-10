@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trash</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Trash</h1>
+
+    <p>
+        <a href="/expenses">Back to Expenses</a>
+    </p>
+
+    <table border="1">
+        <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Memo</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for expense in expenses %}
+        <tr>
+            <td>{{ expense.date }}</td>
+            <td>{{ expense.category }}</td>
+            <td>${{ expense.amount }}</td>
+            <td>{{ expense.memo }}</td>
+            <td>
+                <form action="/expenses/{{ expense.id }}/restore" method="POST" style="display:inline;">
+                    <button type="submit">Restore</button>
+                </form>
+
+                <form action="/expenses/{{ expense.id }}/permanent-delete" method="POST" style="display:inline;">
+                    <button type="submit">Delete Permanently</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

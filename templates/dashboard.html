@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Expense Dashboard</h1>
+
+    <div class="nav-links">
+        <a href="/expenses">Back to Expenses</a>
+        <a href="/budget">Set Budget</a>
+    </div>
+
+    <div class="dashboard-main-layout">
+
+    <div class="dashboard-left">
+
+    <div class="info-card">
+
+    <div class="info-card">
+    <h2>Budget Progress</h2>
+
+    {% if monthly_budget > 0 %}
+        <p>Monthly Budget: <strong>${{ "%.2f"|format(monthly_budget) }}</strong></p>
+        <p>This Month Spending: <strong>${{ "%.2f"|format(this_month_spending) }}</strong></p>
+        <p>Remaining: <strong>${{ "%.2f"|format(remaining_budget) }}</strong></p>
+        <p>Used: <strong>{{ "%.1f"|format(budget_used_percent) }}%</strong></p>
+        <p>Days left this month: <strong>{{ days_left }}</strong></p>
+        <p>Recommended daily spending: <strong>${{ "%.2f"|format(recommended_daily_spending) }}</strong></p>
+
+        {% if remaining_budget < 0 %}
+            <p class="warning-text">You are over budget.</p>
+        {% elif budget_used_percent >= 80 %}
+            <p class="warning-text">You have used over 80% of your budget.</p>
+        {% else %}
+            <p class="success-text">You are staying within your budget.</p>
+        {% endif %}
+    {% else %}
+        <p>No budget set for this month.</p>
+        <a href="/budget">Set Budget</a>
+    {% endif %}
+    </div>
+        <h2>Monthly Comparison</h2>
+
+        <p>This month: <strong>${{ "%.2f"|format(this_month_spending) }}</strong></p>
+        <p>Last month: <strong>${{ "%.2f"|format(last_month_spending) }}</strong></p>
+        <p>Difference: <strong>${{ "%.2f"|format(spending_difference) }}</strong></p>
+        <p>Change: <strong>{{ "%.1f"|format(spending_change_percent) }}%</strong></p>
+
+        {% if spending_difference > 0 %}
+            <p class="warning-text">You spent more than last month.</p>
+        {% elif spending_difference < 0 %}
+            <p class="success-text">You spent less than last month.</p>
+        {% else %}
+            <p>Your spending is the same as last month.</p>
+        {% endif %}
+    </div>
+
+
+    <div class="info-card">
+    <h2>Next Month Prediction</h2>
+
+    <p>Predicted spending: <strong>${{ "%.2f"|format(predicted_next_month) }}</strong></p>
+
+    {% if monthly_budget > 0 %}
+        {% if predicted_difference_from_budget >= 0 %}
+            <p class="success-text">
+                Prediction is ${{ "%.2f"|format(predicted_difference_from_budget) }} under your budget.
+            </p>
+        {% else %}
+            <p class="warning-text">
+                Prediction is ${{ "%.2f"|format(-predicted_difference_from_budget) }} over your budget.
+            </p>
+        {% endif %}
+    {% else %}
+        <p>Set a monthly budget to compare your prediction with your goal.</p>
+    {% endif %}
+    </div>
+
+    
+    <div class="summary-grid">
+        <div class="stat-card">
+            <p class="stat-label">Total Spending</p>
+            <p class="stat-value">${{ "%.2f"|format(total_spending) }}</p>
+        </div>
+
+        <div class="stat-card">
+            <p class="stat-label">Expenses</p>
+            <p class="stat-value">{{ number_of_expenses }}</p>
+        </div>
+
+        <div class="stat-card">
+            <p class="stat-label">Average</p>
+            <p class="stat-value">${{ "%.2f"|format(average_expense) }}</p>
+        </div>
+    </div>
+
+    <div class="info-card">
+        <h2>Highest Expense</h2>
+
+        {% if highest_expense %}
+            <p>Date: {{ highest_expense.date }}</p>
+            <p>Category: {{ highest_expense.category }}</p>
+            <p>Amount: <strong>${{ "%.2f"|format(highest_expense.amount) }}</strong></p>
+            <p>Memo: {{ highest_expense.memo }}</p>
+        {% else %}
+            <p>No expenses yet.</p>
+        {% endif %}
+    </div>
+
+    <h2>Category Breakdown</h2>
+
+    <div class="breakdown-section">
+        <h3>Category Breakdown</h3>
+
+        <table class="breakdown-table">
+            <tr>
+                <th>Category</th>
+                <th>Total</th>
+            </tr>
+
+            {% for item in category_totals %}
+            <tr>
+                <td>{{ item.category }}</td>
+                <td>${{ "%.2f"|format(item.total) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+</div>
+
+        <div class="dashboard-right">
+
+            <div class="chart-box">
+                <h3>Category Radar Chart</h3>
+                <canvas id="radarChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h3>Category Bar Chart</h3>
+                <canvas id="barChart"></canvas>
+            </div>
+
+            <div class="chart-box">
+                <h3>Monthly Spending Trend</h3>
+                <canvas id="lineChart"></canvas>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        const categoryLabels = {{ category_labels | tojson }};
+        const categoryValues = {{ category_values | tojson }};
+        const monthLabels = {{ month_labels | tojson }};
+        const monthTotals = {{ month_totals | tojson }};
+
+        new Chart(document.getElementById("radarChart"), {
+            type: "radar",
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    label: "Spending by Category",
+                    data: categoryValues
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById("barChart"), {
+            type: "bar",
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    label: "Category Totals",
+                    data: categoryValues
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        new Chart(document.getElementById("lineChart"), {
+            type: "line",
+            data: {
+                labels: monthLabels,
+                datasets: [{
+                    label: "Monthly Spending",
+                    data: monthTotals,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

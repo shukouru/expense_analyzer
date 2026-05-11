@@ -82,7 +82,104 @@ The dashboard uses Chart.js to visualize spending data with:
 <img width="1282" height="820" alt="スクリーンショット 2026-05-10 午後3 58 14" src="https://github.com/user-attachments/assets/2aeaeb17-baf4-4410-af41-b98fa6d8b738" />
 
 
+## Installation
+
+Clone the repository:
+
+```bash
+git clone https://github.com/shukouru/expense_analyzer.git
+cd expense_analyzer
+```
+
+Install dependencies:
+
+```bash
+pip install flask flask-login
+```
+
+Run the application:
+
+```bash
+python3 app.py
+```
+
+Open the app in your browser:
+
 ```text
-screenshots/dashboard.png
-screenshots/expenses.png
-screenshots/login.png
+http://127.0.0.1:5001
+```
+
+## Database
+
+This app uses SQLite.
+
+### users
+
+Stores account information.
+
+- id
+- username
+- password_hash
+
+### expenses
+
+Stores user-specific expense records.
+
+- id
+- user_id
+- amount
+- category
+- date
+- memo
+- is_deleted
+
+### budgets
+
+Stores user-specific monthly budget data.
+
+- id
+- user_id
+- month
+- amount
+
+## Main Routes
+
+| Route | Description |
+|---|---|
+| `/register` | Create a new account |
+| `/login` | Login page |
+| `/logout` | Logout |
+| `/expenses` | View expenses |
+| `/expenses/add` | Add a new expense |
+| `/expenses/<id>/edit` | Edit an expense |
+| `/trash` | View deleted expenses |
+| `/budget` | Set monthly budget |
+| `/dashboard` | View analytics dashboard |
+
+## What I Learned
+
+Through this project, I practiced:
+
+- Building a full-stack web application with Flask
+- Designing and using SQLite databases
+- Implementing user authentication with Flask-Login
+- Hashing passwords securely
+- Writing SQL queries for filtering, sorting, and aggregation
+- Creating user-specific data access
+- Building dashboards with data analysis features
+- Visualizing data using Chart.js
+- Styling pages with responsive CSS
+
+## Future Improvements
+
+- CSV export
+- Date range filtering
+- More advanced prediction model
+- Category customization
+- Dark mode
+- Deployment to a cloud platform
+- Password reset feature
+
+## Author
+
+Shuko Urushihara
